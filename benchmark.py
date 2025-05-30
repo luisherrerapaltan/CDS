@@ -1,3 +1,9 @@
+import random
+import time
+
+start_script_time = time.time()
+
+############################## CLASS DEFINITION ###############################
 # Represents a single node in the Ternary Search Tree
 class Node:
     def __init__(self, char):
@@ -113,3 +119,61 @@ class TernarySearchTree:
         if not self.root:
             return f"terminates: {self._empty_string}"
         return f"terminates: {self._empty_string}\n" + self.root.__str__("  ")
+
+############################## PERFORMANCE TEST ##############################
+with open('data/corncob_lowercase.txt') as file:
+    words = [line.strip() for line in file]
+
+sizes = [100, 500, 1_000, 5_000, 10_000, 20_000, 30_000, 40_000, 50_000]
+
+samples = [random.sample(words, k=size) for size in sizes]
+
+# Time to insert 20 non-existing words in trees of different sizes
+nr_runs = 20
+times_insert = {}
+for sample in samples:
+    tst = TernarySearchTree()
+    insert_sample = random.sample([w for w in words if w not in sample], k=20)
+    for word in sample:
+        tst.insert(word)
+    times_insert[len(sample)] = 0.0
+    for _ in range(nr_runs):
+        start_time = int(time.time() * 1e9)
+        for word in insert_sample:
+            tst.insert(word)
+        end_time = int(time.time() * 1e9)
+        times_insert[len(sample)] += end_time - start_time
+    times_insert[len(sample)] /= nr_runs*1_000_000.0
+
+#Times of searching 10 existing and 10 non existing words in trees of different sizes
+nr_runs = 20
+times_search = {}
+for sample in samples:
+    tst = TernarySearchTree()
+    existing = random.sample(sample, k=10)
+    non_existing = random.sample([w for w in words if w not in sample], k=10)
+    search_sample = existing + non_existing
+    for word in sample:
+        tst.insert(word)
+    times_search[len(sample)] = 0.0
+    for _ in range(nr_runs):
+        start_time = int(time.time() * 1e9)
+        for word in search_sample:
+            tst.search(word)
+        end_time = int(time.time() * 1e9)
+        times_search[len(sample)] += end_time - start_time
+    times_search[len(sample)] /= nr_runs*1_000_000.0
+
+end_script_time = time.time()
+
+# Save timing info
+with open("timings.txt", "w") as f:
+    f.write(f"- script execution: {end_script_time - start_script_time:.6f} seconds\n")
+
+    f.write("- tst.insert():\n")
+    for size, duration in times_insert.items():
+        f.write(f"  size={size}: {duration:.6f} ms\n")
+
+    f.write("- tst.search():\n")
+    for size, duration in times_search.items():
+        f.write(f"  size={size}: {duration:.6f} ms\n")
