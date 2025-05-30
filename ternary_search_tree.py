@@ -7,11 +7,6 @@ class Node:
         self.eq = None               # Middle child (next character in word)
         self.right = None            # Right child (chars > self.char)
 
-
-    def __str__(self, indent="") -> str:
-        lines = [f"{indent}char: {self.char}, terminates: {self.terminates}"]
-        return "\n".join(lines)
-
     # Recursively builds a string representation of the subtree rooted at this node
     def __str__(self, indent="") -> str:
         lines = [f"{indent}char: {self.char}, terminates: {self.terminates}"]
@@ -22,6 +17,7 @@ class Node:
         if self.right:
             lines.append(f"{indent}_gt: " + self.right.__str__(indent + "  "))
         return "\n".join(lines)
+
 
 # Implements the Ternary Search Tree data structure
 class TernarySearchTree:
@@ -43,7 +39,7 @@ class TernarySearchTree:
         def _insert(node, word, i):
             char = word[i]
             if not node:
-                node = Node(char)  # Create a node if missing
+                node = Node(char) # Create a node if missing
 
             if char < node.char:
                 node.left = _insert(node.left, word, i)
@@ -62,3 +58,30 @@ class TernarySearchTree:
 
         # Start the recursive insertion at the root
         self.root = _insert(self.root, word, 0)
+
+    # Searches for a word or prefix in the tree
+    # exact = True → look for full word
+    # exact = False → allow prefix matches
+    def search(self, word, exact=False):
+        if word == "":
+            # For empty string, return True if it was explicitly added
+            return True if not exact else self._empty_string
+
+        # Internal recursive function to traverse the tree
+        def _search(node, word, i):
+            if not node:
+                return False  # Dead end: word not found
+
+            char = word[i]
+            if char < node.char:
+                return _search(node.left, word, i)
+            elif char > node.char:
+                return _search(node.right, word, i)
+            else:
+                if i + 1 == len(word):
+                    # At final character
+                    return node.terminates if exact else True
+                return _search(node.eq, word, i + 1)
+
+        return _search(self.root, word, 0)
+
