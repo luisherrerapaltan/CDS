@@ -85,3 +85,31 @@ class TernarySearchTree:
 
         return _search(self.root, word, 0)
 
+    # Returns the number of unique words stored in the tree
+    def __len__(self):
+        return self._size
+
+    # Returns all stored words in the tree as a list
+    def all_strings(self):
+        words = []
+        if self._empty_string:
+            words.append("")  # Include empty string if present
+
+        # Internal recursive function to collect words from the tree
+        def _collect(node, prefix):
+            if not node:
+                return
+            _collect(node.left, prefix)                   # Visit left subtree
+            if node.terminates:
+                words.append(prefix + node.char)          # Add complete word
+            _collect(node.eq, prefix + node.char)         # Visit middle (next char)
+            _collect(node.right, prefix)                  # Visit right subtree
+
+        _collect(self.root, "")
+        return words
+
+    # Returns a string representation of the entire tree
+    def __str__(self):
+        if not self.root:
+            return f"terminates: {self._empty_string}"
+        return f"terminates: {self._empty_string}\n" + self.root.__str__("  ")
