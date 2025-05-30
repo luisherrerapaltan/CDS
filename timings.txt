@@ -1,0 +1,21 @@
+- script execution: 179.924487 seconds
+- tst.insert():
+  size=100: 0.097779 ms
+  size=500: 0.107123 ms
+  size=1000: 0.103962 ms
+  size=5000: 0.121408 ms
+  size=10000: 0.118106 ms
+  size=20000: 0.117248 ms
+  size=30000: 0.125350 ms
+  size=40000: 0.131226 ms
+  size=50000: 0.125530 ms
+- tst.search():
+  size=100: 0.060006 ms
+  size=500: 0.071744 ms
+  size=1000: 0.078042 ms
+  size=5000: 0.092006 ms
+  size=10000: 0.085914 ms
+  size=20000: 0.102579 ms
+  size=30000: 0.097587 ms
+  size=40000: 0.096346 ms
+  size=50000: 0.098496 ms
